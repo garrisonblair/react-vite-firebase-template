@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import "./App.css";
+import "@mantine/core/styles.css";
 import "./index.css";
 import enMessages from "./translations/en.json";
 import frMessages from "./translations/fr.json";
