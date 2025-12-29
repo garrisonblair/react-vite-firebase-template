@@ -11,24 +11,28 @@ import {
 import { useAsync } from "react-use";
 import { db } from "../../firebase";
 import { useUserStore } from "../zustand/user.hooks";
-import { UserData } from "./types";
+import { BareUserData } from "./types";
 
 export const useStoreUserInfo = () => {
-  return async (user: UserInfo) => {
-    await setDoc(doc(collection(db, "users"), user.uid), {
+  return async (user: UserInfo): Promise<BareUserData> => {
+    const userData: BareUserData = {
       displayName: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
       phoneNumber: user.phoneNumber,
       uid: user.uid,
-    });
+    };
+
+    await setDoc(doc(collection(db, "users"), user.uid), userData);
+
+    return userData;
   };
 };
 
 export const useGetUserInfo = () => {
-  return async (id: User["uid"]): Promise<UserInfo> => {
+  return async (id: User["uid"]): Promise<BareUserData> => {
     const snapshot = await getDoc(doc(db, "users", id));
-    return snapshot.data() as UserInfo;
+    return snapshot.data() as BareUserData;
   };
 };
 
@@ -43,12 +47,12 @@ export const useGetUsers = () => {
     const userCollection = collection(db, "users");
     const q = query(userCollection, where("email", "!=", user.email));
 
-    const users: UserData[] = [];
+    const users: BareUserData[] = [];
 
     const snapshot = await getDocs(q);
 
     snapshot.forEach((doc) => {
-      users.push(doc.data() as UserData);
+      users.push(doc.data() as BareUserData);
     });
 
     return users;

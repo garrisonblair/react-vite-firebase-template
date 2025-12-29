@@ -1,6 +1,6 @@
 {
-  "short_name": "Blind Test",
-  "name": "Blind Test",
+  "short_name": "app_name",
+  "name": "app_name",
   "icons": [
     {
       "src": "favicon.ico",
@@ -28,7 +28,7 @@
     }
   ],
   "start_url": "./",
-  "scope": "https://blindtest.gcbx.fr/",
+  "scope": "app_scope",
   "display": "standalone",
   "theme_color": "#f783ac",
   "background_color": "#fff0f6"

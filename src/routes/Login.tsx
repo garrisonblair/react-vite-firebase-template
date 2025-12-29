@@ -1,15 +1,35 @@
 import { Card, Center, Stack, Title } from "@mantine/core";
+import { createFileRoute } from "@tanstack/react-router";
 import { getAuth } from "firebase/auth";
 import firebase from "firebase/compat/app";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
-import React, { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { FormattedMessage } from "react-intl";
 import { app } from "../firebase";
 import { PATHS } from "../types/paths/paths";
 import { createPath } from "../types/paths/urlBuilder";
-import { FormattedMessage } from "react-intl";
 
-const Login: React.FunctionComponent = () => {
+export const Route = createFileRoute("/login")({
+  component: Login,
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    // validate and parse the search params into a typed state
+    return {
+      redirect: search.redirect as string | undefined,
+    };
+  },
+});
+
+function Login() {
+  const { redirect } = Route.useSearch();
+
+  const signInSuccessUrl = useMemo(() => {
+    if (redirect) {
+      return redirect;
+    }
+    return createPath(PATHS.HOME, {}, { baseUrl: window.location.origin });
+  }, [redirect]);
+  
   useEffect(() => {
     // Initialize the FirebaseUI Widget using Firebase.
     const ui =
@@ -17,16 +37,12 @@ const Login: React.FunctionComponent = () => {
       new firebaseui.auth.AuthUI(getAuth(app));
 
     ui.start("#firebaseui-auth-container", {
-      signInSuccessUrl: createPath(
-        PATHS.HOME,
-        {},
-        { baseUrl: window.location.origin }
-      ),
+      signInSuccessUrl,
       signInFlow: "popup",
       signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
       // Other config options...
     });
-  }, []);
+  }, [signInSuccessUrl]);
 
   return (
     <Center h="100vh" w="100vw">
